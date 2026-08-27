@@ -1,5 +1,7 @@
 # Limit Order Book ML
 
+![ci](https://github.com/mattogun/orderbook-ml/actions/workflows/ci.yml/badge.svg)
+
 Predicting short-horizon mid-price direction from raw limit order book data.
 The dataset is self-collected: a fault-tolerant websocket collector streams
 live L2 depth (top 20 levels, 100ms) into validated parquet.
