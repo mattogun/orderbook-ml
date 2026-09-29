@@ -86,6 +86,9 @@ depth stream does not carry one. Latency and jitter are therefore folded
 into the timestamp. Fine for 100ms sampling, and stated here so nobody
 mistakes it for exchange-clock data.
 
+How the collector connects, reconnects and validates, with its known
+limitations, is written up in [docs/market-connectivity.md](docs/market-connectivity.md).
+
 Collect your own:
 
 ```
