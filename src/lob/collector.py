@@ -19,6 +19,8 @@ import websockets
 from lob.validate import flatten, validate_snapshot
 
 WS_URL = "wss://stream.binance.com:9443/ws/{symbol}@depth20@100ms"
+RECV_TIMEOUT_S = 10  # this long with no message means the link is dead
+MAX_BACKOFF_S = 30.0
 
 
 async def collect(symbol: str, duration_s: float, out_path: str) -> dict:
@@ -33,7 +35,7 @@ async def collect(symbol: str, duration_s: float, out_path: str) -> dict:
             async with websockets.connect(WS_URL.format(symbol=symbol)) as ws:
                 backoff = 1.0
                 while time.time() < deadline:
-                    raw = await asyncio.wait_for(ws.recv(), timeout=10)
+                    raw = await asyncio.wait_for(ws.recv(), timeout=RECV_TIMEOUT_S)
                     msg = json.loads(raw)
                     bids = [(float(p), float(q)) for p, q in msg.get("bids", [])]
                     asks = [(float(p), float(q)) for p, q in msg.get("asks", [])]
@@ -42,7 +44,7 @@ async def collect(symbol: str, duration_s: float, out_path: str) -> dict:
                     else:
                         dropped += 1
         except (OSError, TimeoutError, json.JSONDecodeError, websockets.WebSocketException):
-            await asyncio.sleep(min(backoff, 30.0))
+            await asyncio.sleep(min(backoff, MAX_BACKOFF_S))
             backoff *= 2
     if rows:
         pd.DataFrame(rows).to_parquet(out_path)
