@@ -12,8 +12,16 @@ def test_crossed_book_rejected():
     assert not validate_snapshot([(101.0, 1.0)], [(100.5, 1.0)])
 
 
+def test_locked_book_rejected():
+    assert not validate_snapshot([(100.0, 1.0)], [(100.0, 1.0)])
+
+
 def test_unsorted_bids_rejected():
     assert not validate_snapshot([(99.0, 1.0), (100.0, 1.0)], GOOD_ASKS)
+
+
+def test_unsorted_asks_rejected():
+    assert not validate_snapshot(GOOD_BIDS, [(101.0, 1.0), (100.5, 1.0)])
 
 
 def test_nonpositive_quantity_rejected():
